@@ -1,0 +1,15 @@
+{
+    "app":{
+        "domain": "10.135.131.76:8000"
+    },
+    "db": {
+        "host": "localhost",
+        "user": "root",
+        "password": "O)B5&nE6F",
+        "database":"lemonmaze",
+        "timezone":"+00:00",
+        "charset": "utf8mb4_general_ci",
+        "port": "3306"
+    }
+}
+
