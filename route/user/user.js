@@ -252,7 +252,6 @@ router.post("/user/create-user", async (req, res) => {
     const existingUser = await db.query("SELECT * FROM users WHERE pseudo = ?;", [pseudo]);
 
     if (existingUser[0].length > 0) {
-      console.log("pseudo pris");
       return res.status(400).json({
         success: false,
         error: "Ce pseudo est déjà pris !"

@@ -100,9 +100,9 @@ router.post("/oldlogin", async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               mail:
+ *               pseudo:
  *                 type: string
- *                 description: Adresse e-mail de l'utilisateur
+ *                 description: Pseudo de l'utilisateur
  *               password:
  *                 type: string
  *                 description: Mot de passe de l'utilisateur
@@ -117,9 +117,9 @@ router.post("/oldlogin", async (req, res) => {
  *                 status:
  *                   type: string
  *                   description: Statut de la connexion
- *                 mail:
+ *                 pseudo:
  *                   type: string
- *                   description: Adresse e-mail de l'utilisateur
+ *                   description: Pseudo de l'utilisateur
  *       '401':
  *         description: Utilisateur non trouvé ou mot de passe incorrect
  *         content:
@@ -135,11 +135,11 @@ router.post("/oldlogin", async (req, res) => {
  */
 router.post("/login", async (req, res) => {
   try {
-    const mail = req.body.mail;
+    const pseudo = req.body.pseudo;
     const password = req.body.password;
     const db = await getDB();
 
-    const user = await db.query("SELECT pseudo, mail, password FROM users WHERE mail = ?;", [mail]);
+    const user = await db.query("SELECT pseudo, password FROM users WHERE pseudo = ?;", [pseudo]);
 
     // Vérifier si l'utilisateur est trouvé
     if (user[0].length === 0) {
@@ -160,7 +160,7 @@ router.post("/login", async (req, res) => {
       return res.json({
         success: true,
         status: "Connecté",
-        mail: userData.mail 
+        pseudo: userData.pseudo 
       });
     }
   } catch (error) {
