@@ -1,91 +1,10 @@
 const { getDB } = require("../../database/database");
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
+const config = require("config");
 
-/**
- * @swagger
- * /oldlogin:
- *   post:
- *     summary: Connexion d'un utilisateur
- *     tags: [Login]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               mail:
- *                 type: string
- *                 description: Adresse e-mail de l'utilisateur
- *               password:
- *                 type: string
- *                 description: Mot de passe de l'utilisateur
- *     responses:
- *       '200':
- *         description: Connecté avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   description: Statut de la connexion
- *                 mail:
- *                   type: string
- *                   description: Adresse e-mail de l'utilisateur
- *       '401':
- *         description: Utilisateur non trouvé ou mot de passe incorrect
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   description: Statut de la connexion
- *       '500':
- *         description: Erreur interne du serveur
- */
-router.post("/oldlogin", async (req, res) => {
-    try {
-      const mail = req.body.mail;
-      const password = req.body.password;
-  
-      const user = await db.query("SELECT pseudo, mail, password FROM users WHERE mail = ?;", [mail]);
-  
-      // Vérifier si l'utilisateur est trouvé
-      if (user[0].length === 0) {
-        return res.status(401).json({
-          success: false,
-          status: "Utilisateur non trouvé."
-        });
-      }
-  
-      const userData = user[0][0];
-      const userPassword = userData.password;
-      if (userPassword !== password) {
-        return res.status(401).json({
-          success: false,
-          status: "Mot de passe incorrect."
-        });
-      } else {
-        return res.json({
-          success:true,
-          status: "Connecté",
-          mail: userData.mail // Ajout du champ mail dans la réponse JSON
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        success: false,
-        error: "Internal Server Error"
-      });
-    }
-  });
-
+const secretKey = config.get("key.token");
 
 /**
  * @swagger
@@ -114,12 +33,9 @@ router.post("/oldlogin", async (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 token:
  *                   type: string
- *                   description: Statut de la connexion
- *                 pseudo:
- *                   type: string
- *                   description: Pseudo de l'utilisateur
+ *                   description: Token JWT de l'utilisateur
  *       '401':
  *         description: Utilisateur non trouvé ou mot de passe incorrect
  *         content:
@@ -135,43 +51,53 @@ router.post("/oldlogin", async (req, res) => {
  */
 router.post("/login", async (req, res) => {
   try {
-    const pseudo = req.body.pseudo;
-    const password = req.body.password;
+    const { pseudo, password } = req.body;
     const db = await getDB();
 
-    const user = await db.query("SELECT pseudo, password FROM users WHERE pseudo = ?;", [pseudo]);
+    const [user] = await db.query("SELECT id, pseudo, password, mail, age, ville FROM users WHERE pseudo = ?;", [pseudo]);
 
     // Vérifier si l'utilisateur est trouvé
-    if (user[0].length === 0) {
+    if (user.length === 0) {
       return res.status(401).json({
         success: false,
         status: "Utilisateur non trouvé."
       });
     }
-
-    const userData = user[0][0];
+    
+    const userData = user[0];
     const userPassword = userData.password;
+
+    // Vérifier si le mot de passe est correct
     if (userPassword !== password) {
       return res.status(401).json({
         success: false,
         status: "Mot de passe incorrect."
       });
     } else {
+      // Créer un token JWT
+      const token = jwt.sign(
+        { userId: userData.id, mail: userData.mail, age: userData.age, ville: userData.ville }, // Payload
+        secretKey, // Clé secrète
+        { expiresIn: '1h' } // Options
+      );
       return res.json({
         success: true,
+        token: token,
         status: "Connecté",
-        pseudo: userData.pseudo 
+        pseudo: userData.pseudo,
+        mail: userData.mail,
+        id: userData.id,
+        age: userData.age,
+        ville: userData.ville
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       success: false,
-      error: "Internal Server Error"
+      status: "Internal Server Error"
     });
   }
 });
-
-
 
 module.exports = router;

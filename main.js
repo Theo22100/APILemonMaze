@@ -48,7 +48,6 @@ const options = {
 const specs = swaggerJsdoc(options);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-// Connexion à la base de données
 
 
 // Route de test
@@ -63,11 +62,9 @@ app.get("/", (req, res) => {
 // Connexion à la base de données et démarrage du serveur
 async function startServer() {
   try {
-    // Obtenez la connexion à la base de données
     const db = await require("./database/database").getDB();
-    // Vérifiez si la connexion est réussie
     if (db) {
-      // Démarrer le serveur Express
+      // Démarrer serveur
       const PORT = process.env.PORT || 8000;
       app.listen(PORT, () => {
         console.log(`Serveur en cours d'exécution sur le port ${PORT}`);
@@ -85,3 +82,6 @@ async function startServer() {
 startServer();
 
 module.exports = app;
+
+// LetsEncrypt
+// Certbot

@@ -318,7 +318,7 @@ router.post("/user/create-user", async (req, res) => {
  *         description: Erreur interne du serveur
  */
 router.delete("/user/delete-user/:id", async (req, res) => {
-  const userId = req.body.userId;
+  const userId = req.params.id; // Récupérer l'ID de l'utilisateur à partir des paramètres d'URL
   try {
     const db = await getDB();
     // Vérifiez d'abord si l'utilisateur existe
