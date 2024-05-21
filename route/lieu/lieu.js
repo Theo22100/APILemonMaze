@@ -130,6 +130,63 @@ router.get("/lieu/getlieu/:idlieu", async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /lieu/getnomlieu/{idlieu}:
+ *   get:
+ *     summary: Obtenir les informations d'un lieu spécifique
+ *     tags: [Lieu]
+ *     parameters:
+ *       - in: path
+ *         name: idlieu
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du lieu à récupérer
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 idlieu:
+ *                   type: integer
+ *                   description: ID du lieu
+ *                 nom:
+ *                   type: string
+ *                   description: Nom du lieu
+ *       '404':
+ *         description: Lieu non trouvé
+ *       '500':
+ *         description: Erreur interne du serveur
+ */
+router.get("/lieu/getnomlieu/:idlieu", async (req, res) => {
+  const idlieu = req.params.idlieu;
+  try {
+    const db = await getDB();
+    const [lieu] = await db.query("SELECT nom FROM lieu WHERE idlieu = ?;", [idlieu]);
+    if (lieu.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Lieu non trouvé."
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: lieu[0]
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur interne du serveur."
+    });
+  }
+});
+
 /**
  * @swagger
  * /lieu/create-lieu:

@@ -5,7 +5,7 @@ const router = express.Router();
 /**
  * @swagger
  * /remove-citron-bleu:
- *   post:
+ *   put:
  *     summary: Retirer un certain nombre de citrons bleus à un utilisateur
  *     tags: [CitronBleu]
  *     requestBody:
@@ -42,33 +42,46 @@ const router = express.Router();
  *       '500':
  *         description: Erreur interne du serveur
  */
-router.post("/remove-citron-bleu", async (req, res) => {
-    const userId = req.body.userId;
-    const nombre = req.body.nombre;
-  
-    try {
-      const db = await getDB();
-      // Vérifiez d'abord si l'utilisateur existe
-      const [user] = await db.query("SELECT * FROM users WHERE id = ?;", [userId]);
-      if (user.length === 0) {
-        return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
-      }
-  
-      // Retirez le nombre de citrons bleus
-      await db.query("UPDATE users SET citronBleu = citronBleu - ? WHERE id = ?;", [nombre, userId]);
-  
-      res.status(200).json({ success: true, message: "Citron Bleu retiré avec succès" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: "Erreur lors du retrait du Citron Bleu" });
+router.put("/remove-citron-bleu", async (req, res) => {
+  const userId = req.body.userId;
+  const nombre = req.body.nombre;
+
+  if (typeof userId !== 'number' || typeof nombre !== 'number' || nombre <= 0) {
+    return res.status(400).json({ success: false, message: "Requête invalide" });
+  }
+
+  try {
+    const db = await getDB();
+    // Vérifiez d'abord si l'utilisateur existe et récupérez le nombre actuel de citrons bleus
+    const [user] = await db.query("SELECT citronBleu FROM users WHERE id = ?;", [userId]);
+    if (user.length === 0) {
+      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
     }
-  });
+
+    const currentCitronBleu = user[0].citronBleu;
+
+    // Vérifiez si le retrait ne rendra pas le nombre de citrons bleus inférieur à zéro
+    if (currentCitronBleu - nombre < 0) {
+      return res.status(400).json({ success: false, message: "Nombre insuffisant de citrons bleus" });
+    }
+
+    // Retirez le nombre de citrons bleus
+    await db.query("UPDATE users SET citronBleu = citronBleu - ? WHERE id = ?;", [nombre, userId]);
+
+    res.status(200).json({ success: true, message: "Citron Bleu retiré avec succès" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Erreur lors du retrait du Citron Bleu" });
+  }
+});
+
+
 
   
 /**
  * @swagger
  * /add-citron-bleu:
- *   post:
+ *   put:
  *     summary: Ajouter un certain nombre de citrons bleus à un utilisateur
  *     tags: [CitronBleu]
  *     requestBody:
@@ -105,7 +118,7 @@ router.post("/remove-citron-bleu", async (req, res) => {
  *       '500':
  *         description: Erreur interne du serveur
  */
-router.post("/add-citron-bleu", async (req, res) => {
+router.put("/add-citron-bleu", async (req, res) => {
     const userId = req.body.userId;
     const nombre = req.body.nombre;
   

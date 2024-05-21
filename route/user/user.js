@@ -92,8 +92,8 @@ router.get("/user/users", async (req, res) => {
  *     summary: Obtenir les données d'un utilisateur
  *     tags: [User]
  *     parameters:
- *       - in: query
- *         name: userId
+ *       - in: params
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -118,7 +118,7 @@ router.get("/user/users", async (req, res) => {
  *         description: Erreur interne du serveur
  */
 router.get("/user/getuser/:id", async (req, res) => {
-  const userId = req.query.userId;
+  const userId = req.params.id;
 
   try {
     const db = await getDB();

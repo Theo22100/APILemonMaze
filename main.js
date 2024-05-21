@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const citronBleu = require("./route/citron/citronbleu.js");
-const citronOrange = require("./route/citron/citronorange.js");
+const citronJaune = require("./route/citron/citronjaune.js");
 const citronRouge = require("./route/citron/citronrouge.js");
 const citronVert = require("./route/citron/citronvert.js");
 const lieuRoutes = require("./route/lieu/lieu.js");
@@ -16,9 +16,11 @@ const userRoutes = require("./route/user/user.js");
 const typeRoutes = require("./route/type/type.js");
 const utilsRoutes = require("./route/utils/utils.js");
 const partyRoutes = require("./route/party/party.js");
+const recompenseRoutes = require("./route/recompense/recompense.js");
+const recompenseUserRoutes = require("./route/recompense_user/recompense_user.js");
 const parkourRoutes = require("./route/parkour/parkour.js");
 const villeRoutes = require("./route/ville/ville.js");
-app.use(userRoutes,typeRoutes,parkourRoutes,utilsRoutes,villeRoutes,lieuRoutes,citronBleu,citronOrange,citronRouge,citronVert,partyRoutes);
+app.use(userRoutes,typeRoutes,parkourRoutes,utilsRoutes,villeRoutes,lieuRoutes,citronBleu,citronJaune,citronRouge,citronVert,partyRoutes,recompenseRoutes,recompenseUserRoutes);
 
 // Configuration de Swagger
 const options = {
@@ -33,12 +35,14 @@ const options = {
   // Chemin vers routes
   apis: ["./main.js", 
   "./route/citron/citronbleu.js", 
-  "./route/citron/citronorange.js", 
+  "./route/citron/citronjaune.js", 
   "./route/citron/citronrouge.js", 
   "./route/citron/citronvert.js",
   "./route/lieu/lieu.js", 
   "./route/parkour/parkour.js",
   "./route/party/party.js", 
+  "./route/recompense/recompense.js", 
+  "./route/recompense_user/recompense_user.js", 
   "./route/type/type.js",
   "./route/user/user.js",
   "./route/utils/utils.js", 
