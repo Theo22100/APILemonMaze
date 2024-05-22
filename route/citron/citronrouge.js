@@ -45,7 +45,6 @@ const router = express.Router();
 router.put("/remove-citron-rouge", async (req, res) => {
   const userId = req.body.userId;
   const nombre = req.body.nombre;
-  console.log(userId, nombre);
 
   if ( userId.isEmpty || nombre <= 0) {
     return res.status(400).json({ success: false, message: "Requête invalide" });

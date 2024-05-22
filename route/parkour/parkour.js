@@ -26,6 +26,29 @@ router.get("/parkour/parkours", async (req, res) => {
       res.status(500).json({ sucess:true,error: "Erreur interne du serveur." });
     }
   });
+
+/**
+ * @swagger
+ * /parkour/parkoursidbar:
+ *   get:
+ *     summary: Obtenir la liste des idparkour de tous les parcours bar
+ *     tags: [Parkour]
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *       '500':
+ *         description: Erreur interne du serveur
+ */
+router.get("/parkour/parkoursidbar", async (req, res) => {
+  try {
+    const db = await getDB();
+    const [rows] = await db.query("SELECT idparkour FROM parkour WHERE id_type = 1;");
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ sucess:true,error: "Erreur interne du serveur." });
+  }
+});
   
   /**
    * @swagger
@@ -35,7 +58,7 @@ router.get("/parkour/parkours", async (req, res) => {
    *     tags: [Parkour]
    *     parameters:
    *       - in: path
-   *         name: id
+   *         name: idparkour
    *         required: true
    *         description: ID du parcours à récupérer
    *         schema:
@@ -49,7 +72,7 @@ router.get("/parkour/parkours", async (req, res) => {
    *         description: Erreur interne du serveur
    */
   router.get("/parkour/getparkour/:idparkour", async (req, res) => {
-    const id = req.params.id;
+    const id = req.params.idparkour;
     try {
       const db = await getDB();
       const [parkour] = await db.query("SELECT * FROM parkour WHERE idparkour = ?;", [id]);
@@ -81,9 +104,6 @@ router.get("/parkour/parkours", async (req, res) => {
    *               nom:
    *                 type: string
    *                 description: Nom du nouveau parcours
-   *               avis:
-   *                 type: integer
-   *                 description: Avis du nouveau parcours
    *               id_lieu1:
    *                 type: integer
    *                 description: ID du premier lieu du nouveau parcours
@@ -110,10 +130,10 @@ router.get("/parkour/parkours", async (req, res) => {
    *         description: Erreur interne du serveur
    */
   router.post("/parkour/create-parkour", async (req, res) => {
-    const { nom, avis, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type } = req.body;
+    const { nom, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type } = req.body;
     
     // Vérifier si les champs requis sont fournis
-    if (!nom || !avis || !id_lieu1 || !id_lieu2 || !id_lieu3 || !id_lieu4 || !id_type) {
+    if (!nom || !id_lieu1 || !id_lieu2 || !id_lieu3 || !id_lieu4 || !id_type) {
       return res.status(400).json({ success:false,error: "Tous les champs sont requis." });
     }
   
@@ -139,8 +159,8 @@ router.get("/parkour/parkours", async (req, res) => {
       }
       
       // Insérer le nouveau parcours dans la base de données
-      await db.query("INSERT INTO parkour (nom, avis, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type) VALUES (?, ?, ?, ?, ?, ?, ?);", 
-        [nom, avis, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type]);
+      await db.query("INSERT INTO parkour (nom, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type) VALUES (?, ?, ?, ?, ?, ?);", 
+        [nom, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type]);
       res.status(200).json({ success:true,message: "Parcours créé avec succès." });
     } catch (error) {
       console.error(error);
@@ -150,13 +170,13 @@ router.get("/parkour/parkours", async (req, res) => {
   
   /**
    * @swagger
-   * /parkour/getparkour/{idparkour}:
+   * /parkour/modifparkour/{idparkour}:
    *   put:
    *     summary: Modifier un parcours spécifique
    *     tags: [Parkour]
    *     parameters:
    *       - in: path
-   *         name: id
+   *         name: idparkour
    *         required: true
    *         description: ID du parcours à modifier
    *         schema:
@@ -171,9 +191,6 @@ router.get("/parkour/parkours", async (req, res) => {
    *               nom:
    *                 type: string
    *                 description: Nouveau nom du parcours
-   *               avis:
-   *                 type: string
-   *                 description: Nouvel avis sur le parcours
    *               id_lieu1:
    *                 type: integer
    *                 description: Nouvel ID du premier lieu du parcours
@@ -197,16 +214,16 @@ router.get("/parkour/parkours", async (req, res) => {
    *       '500':
    *         description: Erreur interne du serveur
    */
-  router.put("/parkour/getparkour/:idparkour", async (req, res) => {
-    const id = req.params.id;
-    const { nom, avis, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type } = req.body;
+  router.put("/parkour/modifparkour/:idparkour", async (req, res) => {
+    const id = req.params.idparkour;
+    const { nom, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type } = req.body;
     try {
       const db = await getDB();
       const [parkour] = await db.query("SELECT * FROM parkour WHERE idparkour = ?;", [id]);
       if (parkour.length === 0) {
         return res.status(404).json({ success: false,error: "Parcours non trouvé." });
       }
-      await db.query("UPDATE parkour SET nom = ?, avis = ?, id_lieu1 = ?, id_lieu2 = ?, id_lieu3 = ?, id_lieu4 = ?, id_type = ? WHERE idparkour = ?;", [nom, avis, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type, id]);
+      await db.query("UPDATE parkour SET nom = ?, id_lieu1 = ?, id_lieu2 = ?, id_lieu3 = ?, id_lieu4 = ?, id_type = ? WHERE idparkour = ?;", [nom, id_lieu1, id_lieu2, id_lieu3, id_lieu4, id_type, id]);
       res.json({ success: true, message: "Parcours modifié avec succès" });
     } catch (error) {
       console.error(error);
@@ -222,7 +239,7 @@ router.get("/parkour/parkours", async (req, res) => {
    *     tags: [Parkour]
    *     parameters:
    *       - in: path
-   *         name: id
+   *         name: idparkour
    *         required: true
    *         description: ID du parcours à supprimer
    *         schema:
@@ -235,8 +252,8 @@ router.get("/parkour/parkours", async (req, res) => {
    *       '500':
    *         description: Erreur interne du serveur
    */
-  router.delete("/parkour/parkour-delete/", async (req, res) => {
-    const id = req.params.id;
+  router.delete("/parkour/parkour-delete/:idparkour", async (req, res) => {
+    const id = req.params.idparkour;
     try {
       const db = await getDB();
       const [parkour] = await db.query("SELECT * FROM parkour WHERE idparkour = ?;", [id]);

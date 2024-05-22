@@ -99,13 +99,20 @@ router.get("/recompense_user/getrecompense_user/:id", async (req, res) => {
 /**
  * Générer un code aléatoire de 10 caractères
  */
-function generateRandomCode() {
-  return Math.random().toString(36).substring(2, 12);
+function generateRandomCode(length = 10) {
+  const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
 }
+
 
 /**
  * @swagger
- * /recompense_user/create-recompense_user:
+ * /recompense_user/create_recompense_user:
  *   post:
  *     summary: Créer une nouvelle récompense utilisateur
  *     tags: [RecompenseUser]
@@ -154,7 +161,7 @@ function generateRandomCode() {
  *                   type: string
  *                   description: Description de l'erreur interne du serveur
  */
-router.post("/recompense_user/create-recompense_user", async (req, res) => {
+router.post("/recompense_user/create_recompense_user", async (req, res) => {
   try {
     const { id_user, id_recompense } = req.body;
     const code = generateRandomCode();
@@ -266,7 +273,7 @@ router.delete("/recompense_user/delete-recompense_user/:id", async (req, res) =>
 
 /**
  * @swagger
- * /recompense_user/update-recompense_user/{id}:
+ * /recompense_user/update_recompense_user/{id}:
  *   put:
  *     summary: Mettre à jour les données d'une récompense utilisateur
  *     tags: [RecompenseUser]
@@ -312,7 +319,7 @@ router.delete("/recompense_user/delete-recompense_user/:id", async (req, res) =>
  *       '500':
  *         description: Erreur interne du serveur
  */
-router.put("/recompense_user/update-recompense_user/:id", async (req, res) => {
+router.put("/recompense_user/update_recompense_user/:id", async (req, res) => {
   const recompenseUserId = req.params.id;
   const { id_user, id_recompense, code } = req.body;
 
@@ -365,7 +372,7 @@ router.put("/recompense_user/update-recompense_user/:id", async (req, res) => {
 
 /**
  * @swagger
- * /recompense_user/list-user-recompenses/{id_user}:
+ * /recompense_user/list_user_recompenses/{id_user}:
  *   get:
  *     summary: Obtenir toutes les récompenses d'un utilisateur
  *     tags: [RecompenseUser]
@@ -422,44 +429,45 @@ router.put("/recompense_user/update-recompense_user/:id", async (req, res) => {
  *         description: Erreur interne du serveur
  */
 
-router.get("/recompense_user/list-user-recompenses/:id_user", async (req, res) => {
-    const userId = req.params.id_user;
-  
-    try {
-      const db = await getDB();
-      const [user] = await db.query("SELECT * FROM users WHERE id = ?;", [userId]);
-      if (user.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Utilisateur non trouvé"
-        });
-      }
-  
-      const [recompensesUser] = await db.query(`
-        SELECT ru.id_recompense_user, ru.id_user, ru.id_recompense, ru.code, r.nom, r.info, r.citronBleu, r.citronOrange, r.citronRouge, r.citronVert
-        FROM recompense_user ru
-        JOIN recompense r ON ru.id_recompense = r.idrecompense
-        WHERE ru.id_user = ?;
-      `, [userId]);
-  
-      if (recompensesUser.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Aucune récompense trouvée pour cet utilisateur"
-        });
-      }
-  
-      res.status(200).json({
-        success: true,
-        recompenses: recompensesUser
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
+router.get("/recompense_user/list_user_recompenses/:id_user", async (req, res) => {
+  const userId = req.params.id_user;
+
+  try {
+    const db = await getDB();
+    const [user] = await db.query("SELECT * FROM users WHERE id = ?;", [userId]);
+    if (user.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "Erreur interne du serveur"
+        message: "Utilisateur non trouvé"
       });
     }
-  });
+
+    const [recompensesUser] = await db.query(`
+      SELECT ru.id_recompense_user, ru.id_user, ru.id_recompense, ru.code, r.nom, r.info, r.citronBleu, r.citronOrange, r.citronRouge, r.citronVert
+      FROM recompense_user ru
+      JOIN recompense r ON ru.id_recompense = r.idrecompense
+      WHERE ru.id_user = ?;
+    `, [userId]);
+
+    if (recompensesUser.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Aucune récompense trouvée pour cet utilisateur"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      recompenses: recompensesUser
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur interne du serveur"
+    });
+  }
+});
+
 
 module.exports = router;
