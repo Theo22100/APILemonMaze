@@ -20,7 +20,9 @@ const recompenseRoutes = require("./route/recompense/recompense.js");
 const recompenseUserRoutes = require("./route/recompense_user/recompense_user.js");
 const parkourRoutes = require("./route/parkour/parkour.js");
 const villeRoutes = require("./route/ville/ville.js");
-app.use(userRoutes,typeRoutes,parkourRoutes,utilsRoutes,villeRoutes,lieuRoutes,citronBleu,citronJaune,citronRouge,citronVert,partyRoutes,recompenseRoutes,recompenseUserRoutes);
+const questionRoutes = require("./route/question/question.js");
+const partyquestionRoutes = require("./route/partyquestion/partyquestion.js");
+app.use(userRoutes,typeRoutes,parkourRoutes,utilsRoutes,villeRoutes,lieuRoutes,citronBleu,citronJaune,citronRouge,citronVert,partyRoutes,recompenseRoutes,recompenseUserRoutes,partyquestionRoutes,questionRoutes);
 
 // Configuration de Swagger
 const options = {
@@ -46,7 +48,9 @@ const options = {
   "./route/type/type.js",
   "./route/user/user.js",
   "./route/utils/utils.js", 
-"./route/ville/ville.js"], 
+"./route/ville/ville.js", 
+"./route/question/question.js", 
+"./route/partyquestion/partyquestion.js"], 
 };
 
 const specs = swaggerJsdoc(options);

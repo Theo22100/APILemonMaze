@@ -267,6 +267,177 @@ router.get("/parkour/parkoursidbar", async (req, res) => {
       res.status(500).json({ success: false,error: "Erreur interne du serveur." });
     }
   });
+
+
+
+
+  /**
+ * @swagger
+ * /parkour/getparkour/nomslieu/{idparkour}:
+ *   get:
+ *     summary: Obtenir les informations d'un parcours par ID
+ *     tags: [Parkour]
+ *     parameters:
+ *       - in: path
+ *         name: idparkour
+ *         required: true
+ *         description: ID du parcours à récupérer
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     lieux:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *       '404':
+ *         description: Parcours non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 error:
+ *                   type: string
+ *       '500':
+ *         description: Erreur interne du serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 error:
+ *                   type: string
+ */
+  router.get("/parkour/getparkour/nomslieu/:idparkour", async (req, res) => {
+    const id = req.params.idparkour;
+    try {
+      const db = await getDB();
+      const [parkour] = await db.query("SELECT * FROM parkour WHERE idparkour = ?;", [id]);
+      if (parkour.length === 0) {
+        return res.status(404).json({ success: false, error: "Parcours non trouvé." });
+      }
+  
+      const { id_lieu1, id_lieu2, id_lieu3, id_lieu4 } = parkour[0];
+      const lieuxIds = [id_lieu1, id_lieu2, id_lieu3, id_lieu4];
+  
+      const [lieux] = await db.query("SELECT idlieu, nom FROM lieu WHERE idlieu IN (?);", [lieuxIds]);
+  
+      const lieuxMap = lieux.reduce((acc, lieu) => {
+        acc[lieu.idlieu] = lieu.nom;
+        return acc;
+      }, {});
+  
+      const lieuxNoms = lieuxIds.map(id => lieuxMap[id]);
+  
+      res.json({ success: true, data: { lieux: lieuxNoms } });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: "Erreur interne du serveur." });
+    }
+  });
+  
+
+    /**
+ * @swagger
+ * /parkour/getparkour/nomsgpslieu/{idparkour}:
+ *   get:
+ *     summary: Obtenir les informations d'un parcours par ID
+ *     tags: [Parkour]
+ *     parameters:
+ *       - in: path
+ *         name: idparkour
+ *         required: true
+ *         description: ID du parcours à récupérer
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     lieux:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     gps:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *       '404':
+ *         description: Parcours non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 error:
+ *                   type: string
+ *       '500':
+ *         description: Erreur interne du serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 error:
+ *                   type: string
+ */
+    router.get("/parkour/getparkour/nomsgpslieu/:idparkour", async (req, res) => {
+      const id = req.params.idparkour;
+      try {
+        const db = await getDB();
+        const [parkour] = await db.query("SELECT * FROM parkour WHERE idparkour = ?;", [id]);
+        if (parkour.length === 0) {
+          return res.status(404).json({ success: false, error: "Parcours non trouvé." });
+        }
+    
+        const { id_lieu1, id_lieu2, id_lieu3, id_lieu4 } = parkour[0];
+        const lieuxIds = [id_lieu1, id_lieu2, id_lieu3, id_lieu4];
+    
+        const [lieux] = await db.query("SELECT idlieu, nom, gps FROM lieu WHERE idlieu IN (?);", [lieuxIds]);
+    
+        const lieuxMap = lieux.reduce((acc, lieu) => {
+          acc[lieu.idlieu] = { nom: lieu.nom, gps: lieu.gps };
+          return acc;
+        }, {});
+    
+        const lieuxNoms = lieuxIds.map(id => lieuxMap[id]);
+    
+        res.json({ success: true, data: { lieux: lieuxNoms }});
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: "Erreur interne du serveur." });
+      }
+    });
+
   
 
 

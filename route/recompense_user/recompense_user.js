@@ -423,6 +423,12 @@ router.put("/recompense_user/update_recompense_user/:id", async (req, res) => {
  *                   citronVert:
  *                     type: integer
  *                     description: Nombre de citrons verts
+ *                   id_lieu:
+ *                     type: integer
+ *                     description: Id lieu de la récompense
+ *                   id_type:
+ *                     type: integer
+ *                     description: Id type de la récompense
  *       '404':
  *         description: Utilisateur ou récompenses non trouvées
  *       '500':
@@ -443,7 +449,7 @@ router.get("/recompense_user/list_user_recompenses/:id_user", async (req, res) =
     }
 
     const [recompensesUser] = await db.query(`
-      SELECT ru.id_recompense_user, ru.id_user, ru.id_recompense, ru.code, r.nom, r.info, r.citronBleu, r.citronOrange, r.citronRouge, r.citronVert
+      SELECT ru.id_recompense_user, ru.id_user, ru.id_recompense, ru.code, r.nom, r.info, r.citronBleu, r.citronOrange, r.citronRouge, r.citronVert, r.id_lieu, r.id_type
       FROM recompense_user ru
       JOIN recompense r ON ru.id_recompense = r.idrecompense
       WHERE ru.id_user = ?;
