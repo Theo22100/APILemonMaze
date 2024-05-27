@@ -74,7 +74,7 @@ async function migrateLieu() {
         INSERT INTO lieu (nom, GPS, info, code, active, id_ville) VALUES (
           "Bar le Saint Germain",
           'https://www.google.com/maps/dir//9+Pl.+Saint-Germain,+35000+Rennes/@48.1105025,-1.7582534,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x480ede359efe7405:0x22b4d70cb76dc65d!2m2!1d-1.6758574!2d48.1105317?hl=fr&entry=ttu',
-          'Bar sobre servant des burgers, de la bière et du whisky dans un cadre classique. Retransmissions d'événements sportifs.',
+          "Bar sobre servant des burgers, de la bière et du whisky dans un cadre classique. Retransmissions d'événements sportifs.",
           3758,
           1,
           1
