@@ -84,8 +84,8 @@ async function startServer() {
     await migrateType();
     await migrateVille();
     await migrateLieu();
-    await migrateParkour();
     await migrateQuestion();
+    await migrateParkour();
     await migrateUsers();
     await migrateParty();
     await migrateRecompense();
