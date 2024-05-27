@@ -462,4 +462,159 @@ router.get("/party/getpartyetat/:idparty", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /party/getcodewithetat/{idparty}:
+ *   get:
+ *     summary: Obtenir les informations spécifiques d'une partie
+ *     tags: [Party]
+ *     parameters:
+ *       - in: path
+ *         name: idparty
+ *         required: true
+ *         description: ID de la partie
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 etat:
+ *                   type: integer
+ *                   description: Etat de la partie
+ *                 code:
+ *                   type: integer
+ *                   description: Code du lieu associé
+ *       '404':
+ *         description: Partie non trouvée
+ *       '500':
+ *         description: Erreur interne du serveur
+ */
+router.get("/party/getcodewithetat/:idparty", async (req, res) => {
+  try {
+    const idparty = req.params.idparty;
+    const db = await getDB();
+
+    // Requête SQL pour obtenir l'état de la partie et le lieu conditionnel
+    const [party] = await db.query(`
+      SELECT p.etat,
+             CASE
+               WHEN p.etat = 0 THEN l1.code
+               WHEN p.etat = 1 THEN l2.code
+               WHEN p.etat = 2 THEN l3.code
+               WHEN p.etat = 3 THEN l4.code
+               ELSE NULL
+             END AS code
+      FROM party p
+      JOIN parkour pk ON p.id_parkour = pk.idparkour
+      LEFT JOIN lieu l1 ON pk.id_lieu1 = l1.idlieu
+      LEFT JOIN lieu l2 ON pk.id_lieu2 = l2.idlieu
+      LEFT JOIN lieu l3 ON pk.id_lieu3 = l3.idlieu
+      LEFT JOIN lieu l4 ON pk.id_lieu4 = l4.idlieu
+      WHERE p.idparty = ?;
+    `, [idparty]);
+
+    if (party.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Partie non trouvée"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        etat: party[0].etat,
+        code: party[0].code
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur interne du serveur"
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /party/add-etat/{idparty}:
+ *   put:
+ *     summary: Incrémenter l'état d'une partie de 1 et renvoyer le nouvel état
+ *     tags: [Party]
+ *     parameters:
+ *       - in: path
+ *         name: idparty
+ *         required: true
+ *         description: ID de la partie
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indique si la mise à jour a réussi
+ *                 new_etat:
+ *                   type: integer
+ *                   description: Le nouvel état de la partie
+ *       '404':
+ *         description: Partie non trouvée
+ *       '500':
+ *         description: Erreur interne du serveur
+ */
+router.put("/party/add-etat/:idparty", async (req, res) => {
+  try {
+    const idparty = req.params.idparty;
+    console.log(`Received request to increment state for party with ID: ${idparty}`);
+
+    if (!idparty || isNaN(idparty)) {
+      const errorMessage = "ID de la partie invalide";
+      console.error(errorMessage);
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+
+    const db = await getDB();
+
+    const [party] = await db.query("SELECT etat FROM party WHERE idparty = ?;", [idparty]);
+    if (party.length === 0) {
+      const errorMessage = "Partie non trouvée";
+      console.error(errorMessage);
+      return res.status(404).json({
+        success: false,
+        message: errorMessage
+      });
+    }
+
+    const newEtat = party[0].etat + 1;
+    await db.query("UPDATE party SET etat = ? WHERE idparty = ?;", [newEtat, idparty]);
+
+    res.status(200).json({
+      success: true,
+      new_etat: newEtat
+    });
+  } catch (error) {
+    console.error("Erreur interne du serveur", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur interne du serveur"
+    });
+  }
+});
+
+
+
+
+
+
 module.exports = router;

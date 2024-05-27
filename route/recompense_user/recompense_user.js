@@ -214,7 +214,7 @@ router.post("/recompense_user/create_recompense_user", async (req, res) => {
 
 /**
  * @swagger
- * /recompense_user/delete-recompense_user/{id}:
+ * /recompense_user/delete-recompense_user/{id_recompense_user}:
  *   delete:
  *     summary: Supprimer une récompense utilisateur
  *     tags: [RecompenseUser]
@@ -244,8 +244,8 @@ router.post("/recompense_user/create_recompense_user", async (req, res) => {
  *       '500':
  *         description: Erreur interne du serveur
  */
-router.delete("/recompense_user/delete-recompense_user/:id", async (req, res) => {
-  const recompenseUserId = req.params.id;
+router.delete("/recompense_user/delete-recompense_user/:id_recompense_user", async (req, res) => {
+  const recompenseUserId = req.params.id_recompense_user;
   try {
     const db = await getDB();
     const [recompenseUser] = await db.query("SELECT * FROM recompense_user WHERE id_recompense_user = ?;", [recompenseUserId]);
@@ -471,6 +471,64 @@ router.get("/recompense_user/list_user_recompenses/:id_user", async (req, res) =
     res.status(500).json({
       success: false,
       message: "Erreur interne du serveur"
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /recompense_user/getcode/{id_recompense_user}:
+ *   get:
+ *     summary: Obtenir le code d'une récompense utilisateur
+ *     tags: [RecompenseUser]
+ *     parameters:
+ *       - in: path
+ *         name: id_recompense_user
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID de la récompense de l'utilisateur
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indique si l'opération a réussi
+ *                 code:
+ *                   type: string
+ *                   description: Code de la récompense utilisateur
+ *       '404':
+ *         description: Récompense utilisateur non trouvée
+ *       '500':
+ *         description: Erreur interne du serveur
+ */
+router.get("/recompense_user/getcode/:id_recompense_user", async (req, res) => {
+  const { id_recompense_user } = req.params;
+
+  try {
+    const db = await getDB();
+    const [recompenseUser] = await db.query("SELECT code FROM recompense_user WHERE id_recompense_user = ?;", [id_recompense_user]);
+    if (recompenseUser.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Récompense utilisateur non trouvée"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      code: recompenseUser[0].code
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération du code de la récompense utilisateur"
     });
   }
 });
