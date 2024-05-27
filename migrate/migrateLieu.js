@@ -24,7 +24,7 @@ async function migrateLieu() {
         INSERT INTO lieu (nom, GPS, info, code, active, id_ville) VALUES (
           'Little Délirium',
           'https://www.google.fr/maps/place/Little+Délirium+Café+Rennes/@48.1062657,-1.6786742,18z/data=!4m15!1m7!3m6!1s0x480edfdca9e2e09b:0x947fd668e4089e82!2sLittle+Délirium+Café+Rennes!8m2!3d48.1062788!4d-1.6779422!16s%2Fg%2F11mn0nd_tj!3m6!1s0x480edfdca9e2e09b:0x947fd668e4089e82!8m2!3d48.1062788!4d-1.6779422!15sCiFkZWxpcml1bSBjaGFybGVzIGRlIGdhdWxsZSByZW5uZXNaIyIhZGVsaXJpdW0gY2hhcmxlcyBkZSBnYXVsbGUgcmVubmVzkgEDYmFy4AEA!16s%2Fg%2F11mn0nd_tj?entry=ttu',
-          'Bar avec plus de 2 000 bières, concerts le jeudi soir et objets de décoration sur l\'univers de la brasserie.',
+          "Bar avec plus de 2 000 bières, concerts le jeudi soir et objets de décoration sur l'univers de la brasserie.",
           4925,
           1,
           1
@@ -34,7 +34,7 @@ async function migrateLieu() {
         INSERT INTO lieu (nom, GPS, info, code, active, id_ville) VALUES (
           'Musée des beaux arts',
           'https://www.google.com/maps/dir//20+Quai+Emile+Zola,+35000+Rennes/@48.1102772,-1.6726458,17z/data=!4m8!4m7!1m0!1m5!1m1!1s0x480ede3571bbdfe3:0x47452abd296511eb!2m2!1d-1.6748103!2d48.1097886?entry=ttu',
-          'Le musée des Beaux-Arts de Rennes est un musée d'art et d'archéologie français. Il a été constitué avec, pour fonds initial, les œuvres saisies lors des confiscations révolutionnaires effectuées en 1794 dans les édifices religieux et civils de la ville de Rennes.',
+          "Le musée des Beaux-Arts de Rennes est un musée d'art et d'archéologie français. Il a été constitué avec, pour fonds initial, les œuvres saisies lors des confiscations révolutionnaires effectuées en 1794 dans les édifices religieux et civils de la ville de Rennes.",
           2190,
           1,
           1
@@ -64,7 +64,7 @@ async function migrateLieu() {
         INSERT INTO lieu (nom, GPS, info, code, active, id_ville) VALUES (
           "Bar Tiffany's",
           'https://www.google.com/maps/dir//19+Rue+Paul+Bert,+35000+Rennes/@48.1107911,-1.7517501,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x480ede4b81161adb:0x1e7e98f9ce7f7d19!2m2!1d-1.6694354!2d48.1108461?entry=ttu',
-          'Burgers et large choix de whiskys proposés dans un pub à l'ambiance détendue avec tables de billard et terrasse fermée.',
+          "Burgers et large choix de whiskys proposés dans un pub à l'ambiance détendue avec tables de billard et terrasse fermée.",
           1109,
           1,
           1
