@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../main'); // Supposons que votre application Express est définie dans un fichier app.js
+const app = require('../main'); 
 
 describe('POST /add-citron-vert', () => {
   test('Ajoute un citron vert avec succès', async () => {

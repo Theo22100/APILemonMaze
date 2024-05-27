@@ -2,17 +2,38 @@ const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const cors = require("cors");
-const db = require("./database/database");
-const { migrateType } = require("./migrate/migratetype");
-const { migrateVille } = require("./migrate/migrateville");
+
+const { migrateType } = require("./migrate/migrateType.js");
+const { migrateVille } = require("./migrate/migrateVille.js");
+const { migrateLieu } = require("./migrate/migrateLieu.js");
+const { migrateParkour } = require("./migrate/migrateParkour.js");
+const { migrateQuestion } = require("./migrate/migrateQuestion.js");
+const { migrateParty } = require("./migrate/migrateParty.js");
+const { migratePartyQuestion } = require("./migrate/migratePartyQuestion.js");
+const { migrateUsers } = require("./migrate/migrateUsers.js");
+const { migrateRecompense } = require("./migrate/migrateRecompense.js");
+const { migrateRecompenseUser } = require("./migrate/migrateRecompenseUser.js");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+const citronBleu = require("./route/citron/citronbleu.js");
+const citronJaune = require("./route/citron/citronjaune.js");
+const citronRouge = require("./route/citron/citronrouge.js");
+const citronVert = require("./route/citron/citronvert.js");
+const lieuRoutes = require("./route/lieu/lieu.js");
+const userRoutes = require("./route/user/user.js");
 const typeRoutes = require("./route/type/type.js");
-
-app.use(typeRoutes);
+const utilsRoutes = require("./route/utils/utils.js");
+const partyRoutes = require("./route/party/party.js");
+const recompenseRoutes = require("./route/recompense/recompense.js");
+const recompenseUserRoutes = require("./route/recompense_user/recompense_user.js");
+const parkourRoutes = require("./route/parkour/parkour.js");
+const villeRoutes = require("./route/ville/ville.js");
+const questionRoutes = require("./route/question/question.js");
+const partyquestionRoutes = require("./route/partyquestion/partyquestion.js");
+app.use(userRoutes,typeRoutes,parkourRoutes,utilsRoutes,villeRoutes,lieuRoutes,citronBleu,citronJaune,citronRouge,citronVert,partyRoutes,recompenseRoutes,recompenseUserRoutes,partyquestionRoutes,questionRoutes);
 
 // Configuration de Swagger
 const options = {
@@ -26,7 +47,21 @@ const options = {
   },
   // Chemin vers routes
   apis: ["./main.js", 
-  "./route/type/type.js"], 
+  "./route/citron/citronbleu.js", 
+  "./route/citron/citronjaune.js", 
+  "./route/citron/citronrouge.js", 
+  "./route/citron/citronvert.js",
+  "./route/lieu/lieu.js", 
+  "./route/parkour/parkour.js",
+  "./route/party/party.js", 
+  "./route/recompense/recompense.js", 
+  "./route/recompense_user/recompense_user.js", 
+  "./route/type/type.js",
+  "./route/user/user.js",
+  "./route/utils/utils.js", 
+"./route/ville/ville.js", 
+"./route/question/question.js", 
+"./route/partyquestion/partyquestion.js"], 
 };
 
 const specs = swaggerJsdoc(options);
@@ -48,6 +83,14 @@ async function startServer() {
   try {
     await migrateType();
     await migrateVille();
+    await migrateLieu();
+    await migrateParkour();
+    await migrateQuestion();
+    await migrateUsers();
+    await migrateParty();
+    await migrateRecompense();
+    await migratePartyQuestion();
+    await migrateRecompenseUser();
     const db = await require("./database/database").getDB();
     if (db) {
       // Démarrer serveur
