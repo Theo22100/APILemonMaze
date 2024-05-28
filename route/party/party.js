@@ -170,9 +170,9 @@ router.post("/party/create-party", async (req, res) => {
       return res.status(500).json({ success: false, error: "Pas assez de questions disponibles." });
     }
 
-    // Ajouter les questions à la table PartyQuestion
+    // Ajouter les questions à la table partyquestion
     for (const question of questions) {
-      await db.query("INSERT INTO PartyQuestion (idparty, idquestion) VALUES (?, ?);", [idparty, question.idquestion]);
+      await db.query("INSERT INTO partyquestion (idparty, idquestion) VALUES (?, ?);", [idparty, question.idquestion]);
     }
 
     res.json({

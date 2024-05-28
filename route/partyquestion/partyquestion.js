@@ -125,7 +125,7 @@ router.get("/partyquestion/:idparty", async (req, res) => {
       const [questions] = await db.query(`
         SELECT q.* 
         FROM question q
-        JOIN PartyQuestion pq ON q.idquestion = pq.idquestion
+        JOIN partyquestion pq ON q.idquestion = pq.idquestion
         WHERE pq.idparty = ?;
       `, [idparty]);
   
@@ -181,7 +181,7 @@ router.delete("/partyquestion/remove-question", async (req, res) => {
       const db = await getDB();
   
       // Vérifier si l'association existe
-      const [association] = await db.query("SELECT * FROM PartyQuestion WHERE idparty = ? AND idquestion = ?;", [idparty, idquestion]);
+      const [association] = await db.query("SELECT * FROM partyquestion WHERE idparty = ? AND idquestion = ?;", [idparty, idquestion]);
       if (association.length === 0) {
         return res.status(404).json({
           success: false,
@@ -190,7 +190,7 @@ router.delete("/partyquestion/remove-question", async (req, res) => {
       }
   
       // Supprimer l'association
-      await db.query("DELETE FROM PartyQuestion WHERE idparty = ? AND idquestion = ?;", [idparty, idquestion]);
+      await db.query("DELETE FROM partyquestion WHERE idparty = ? AND idquestion = ?;", [idparty, idquestion]);
   
       res.json({
         success: true,
