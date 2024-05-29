@@ -45,10 +45,8 @@ const router = express.Router();
 router.put("/remove-citron-rouge", async (req, res) => {
   const userId = req.body.userId;
   const nombre = parseInt(req.body.nombre, 10);
-  console.log(userId);
-  console.log(nombre);
 
-  if (!userId || typeof userId !== 'string' || userId.trim() === "" || isNaN(nombre) || nombre <= 0) {
+  if (userId== 'null' || userId== '0' ||  nombre <= 0) {
     return res.status(400).json({ success: false, message: "Requête invalide" });
   }
 
@@ -57,22 +55,21 @@ router.put("/remove-citron-rouge", async (req, res) => {
     // Vérifiez d'abord si l'utilisateur existe et récupérez le nombre actuel de citrons rouges
     const [user] = await db.query("SELECT citronRouge FROM users WHERE id = ?;", [userId]);
     if (user.length === 0) {
-      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+      return res.status(200).json({ success: false, message: "Utilisateur non trouvé" });
     }
 
     const currentCitronRouge = user[0].citronRouge;
 
     // Vérifiez si le retrait ne rendra pas le nombre de citrons rouges inférieur à zéro
     if (currentCitronRouge - nombre < 0) {
-      return res.status(400).json({ success: false, message: "Nombre insuffisant de citrons rouges" });
+      return res.status(200).json({ success: false, message: "Nombre insuffisant de Citrons Bar" });
     }
 
     // Retirez le nombre de citrons rouges
     await db.query("UPDATE users SET citronRouge = citronRouge - ? WHERE id = ?;", [nombre, userId]);
 
-    res.status(200).json({ success: true, message: "Citron Rouge retiré avec succès" });
+    res.status(200).json({ success: true, message: "Citron Bar retiré avec succès" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ success: false, message: "Erreur lors du retrait du Citron Rouge" });
   }
 });
@@ -136,10 +133,10 @@ router.put("/add-citron-rouge", async (req, res) => {
       // Ajoutez le nombre à la colonne citronRouge
       await db.query("UPDATE users SET citronRouge = citronRouge + ? WHERE id = ?;", [nombre, userId]);
   
-      res.status(200).json({ success: true, message: "Citron Rouge ajouté avec succès" });
+      res.status(200).json({ success: true, message: "Citron Bar ajouté avec succès" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Erreur lors de l'ajout du Citron Rouge" });
+      res.status(500).json({ success: false, message: "Erreur lors de l'ajout du Citron Bar" });
     }
   });
   

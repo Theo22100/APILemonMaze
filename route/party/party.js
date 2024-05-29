@@ -641,7 +641,6 @@ router.get("/party/getcodewithetat/:idparty", async (req, res) => {
 router.put("/party/add-etat/:idparty", async (req, res) => {
   try {
     const idparty = req.params.idparty;
-    console.log(`Received request to increment state for party with ID: ${idparty}`);
 
     if (!idparty || isNaN(idparty)) {
       const errorMessage = "ID de la partie invalide";

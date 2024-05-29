@@ -62,7 +62,7 @@ router.put("/remove-citron-jaune", async (req, res) => {
 
     // Vérifiez si le retrait ne rendra pas le nombre de citrons jaunes inférieur à zéro
     if (currentCitronJaune - nombre < 0) {
-      return res.status(400).json({ success: false, message: "Nombre insuffisant de citrons jaunes" });
+      return res.status(200).json({ success: false, message: "Nombre insuffisant de citrons jaunes" });
     }
 
     // Retirez le nombre de citrons jaunes
