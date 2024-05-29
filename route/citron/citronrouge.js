@@ -44,9 +44,11 @@ const router = express.Router();
  */
 router.put("/remove-citron-rouge", async (req, res) => {
   const userId = req.body.userId;
-  const nombre = req.body.nombre;
+  const nombre = parseInt(req.body.nombre, 10);
+  console.log(userId);
+  console.log(nombre);
 
-  if ( userId.isEmpty || nombre <= 0) {
+  if (!userId || typeof userId !== 'string' || userId.trim() === "" || isNaN(nombre) || nombre <= 0) {
     return res.status(400).json({ success: false, message: "Requête invalide" });
   }
 
@@ -70,10 +72,11 @@ router.put("/remove-citron-rouge", async (req, res) => {
 
     res.status(200).json({ success: true, message: "Citron Rouge retiré avec succès" });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ success: false, message: "Erreur lors du retrait du Citron Rouge" });
   }
 });
+
 
 
 
