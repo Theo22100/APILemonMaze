@@ -37,5 +37,5 @@ async function getDB() {
 }
 
 module.exports = {
-  getDB
+  getDB : getDB
 };
