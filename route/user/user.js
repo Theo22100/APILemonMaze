@@ -92,7 +92,7 @@ router.get("/user/users", async (req, res) => {
  *     summary: Obtenir les données d'un utilisateur
  *     tags: [User]
  *     parameters:
- *       - in: params
+ *       - in: path 
  *         name: id
  *         schema:
  *           type: integer
