@@ -25,10 +25,17 @@ async function connectToDatabase() {
 async function getDB() {
   if (!db) {
     await connectToDatabase();
+  } else {
+    try {
+      await db.ping();
+    } catch (error) {
+      console.error("Connexion à la base de données perdue. Reconnexion en cours...");
+      await connectToDatabase();
+    }
   }
   return db;
 }
 
 module.exports = {
-  getDB: getDB
+  getDB
 };
