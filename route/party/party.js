@@ -724,7 +724,67 @@ router.put("/party/abandon/:idparty", async (req, res) => {
     const db = await getDB();
 
     const abandon = 1;
-    await db.query("UPDATE party SET abandon = ? WHERE idparty = ?;", [abandon, idparty]);
+    const currentDateTime = new Date();
+    await db.query("UPDATE party SET abandon = ?, dateFin = ? WHERE idparty = ?;", [abandon, currentDateTime, idparty]);
+
+    res.status(200).json({
+      success: true
+    });
+  } catch (error) {
+    console.error("Erreur interne du serveur", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur interne du serveur"
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /party/fin-party/{idparty}:
+ *   put:
+ *     summary: Finir une partie
+ *     tags: [Party]
+ *     parameters:
+ *       - in: path
+ *         name: idparty
+ *         required: true
+ *         description: ID de la partie
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indique si la mise à jour a réussi
+ *       '404':
+ *         description: Partie non trouvée
+ *       '500':
+ *         description: Erreur interne du serveur
+ */
+router.put("/party/fin-party/:idparty", async (req, res) => {
+  try {
+    const idparty = req.params.idparty;
+
+    if (!idparty || isNaN(idparty)) {
+      const errorMessage = "ID de la partie invalide";
+      console.error(errorMessage);
+      return res.status(400).json({
+        success: false,
+        message: errorMessage
+      });
+    }
+
+    const db = await getDB();
+
+    const currentDateTime = new Date();
+    await db.query("UPDATE party SET dateFin = ? WHERE idparty = ?;", [currentDateTime, idparty]);
 
     res.status(200).json({
       success: true
